@@ -1,0 +1,61 @@
+#include "DHT.h"
+#include <LiquidCrystal.h>
+
+#define DHTPIN 13 // Change to corresponding DHT sensor pin on board
+#define DHTTYPE DHT11 // Change to corresponding DHT sensor model
+
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+const int recordingInterval = 2000; // time between readings in milliseconds
+
+#define fanPin 7
+
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7); // Create LCD object
+DHT dht(DHTPIN, DHTTYPE); // Create DHT sensor object
+
+void setup() {
+  Serial.begin(9600); // Start the serial monitor
+  dht.begin(); // Begin polling the DHT sensor
+  lcd.begin(16,2); // Turn on the LCD and set to 16 columns, 2 rows (1602 display)
+
+
+}
+
+void loop() {
+  // Declare and initialize variables to store temperature and humidity
+  float h = dht.readHumidity();
+  float f = dht.readTemperature(true); // "true" indicates the use of Fahrenheit as units
+
+  // Print temperatures to the Arduino serial monitor. This block should be commented out when module is deployed
+  Serial.print(F("Humidity: "));
+  Serial.print(h); 
+  Serial.print(F("%  Temperature: "));
+  Serial.print(f);
+  Serial.println(F("°F"));
+
+  // Write the temperature and humidity to the LCD with relevant information
+  lcd.setCursor(0,0);
+  lcd.print("Temp: ");
+  lcd.print(f);
+  lcd.setCursor(0,1);
+  lcd.print("Humidity: ");
+  lcd.print(h);
+  delay(recordingInterval); // Add delay between recordings
+  
+  if (analogRead(0) > 512) {
+    digitalWrite(6, HIGH);
+  } else {
+    digitalWrite(6, LOW);
+  }
+
+  /*
+  if (h > 50) {
+    digitalWrite(6, HIGH);
+    Serial.print("HI");
+  } else {
+    digitalWrite(6, LOW);
+    Serial.print("LOW");
+  }
+  */
+
+
+}
